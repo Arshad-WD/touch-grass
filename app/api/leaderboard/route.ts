@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 
-// KV helper
-async function getKv() {
-  try {
-    const { kv } = await import('@vercel/kv');
-    return kv;
-  } catch {
-    return null;
-  }
-}
+import { Redis } from '@upstash/redis'
+
+const kv = (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
 
 // Fallback mock data when KV is not configured
 const mockLeaderboard = [
@@ -20,7 +19,6 @@ const mockLeaderboard = [
 ];
 
 export async function GET() {
-  const kv = await getKv();
 
   if (!kv) {
     // KV not configured — return mock data

@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 
-// KV helper that works even without KV configured
-async function getKv() {
-  try {
-    const { kv } = await import('@vercel/kv');
-    return kv;
-  } catch {
-    return null;
-  }
-}
+import { Redis } from '@upstash/redis'
+
+const kv = (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
 
 export async function POST(req: Request) {
   try {
@@ -22,7 +21,6 @@ export async function POST(req: Request) {
       );
     }
 
-    const kv = await getKv();
     const today = new Date().toISOString().split('T')[0];
 
     if (!kv) {

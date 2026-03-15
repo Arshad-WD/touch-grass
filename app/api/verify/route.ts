@@ -14,28 +14,14 @@ import * as exifr from 'exifr';
 
 console.log('GROQ_API_KEY configured:', !!process.env.GROQ_API_KEY);
 
-// Helper: KV wrapper that falls back gracefully when env vars are missing
-async function kvGet(key: string): Promise<unknown> {
-  try {
-    const { kv } = await import('@vercel/kv');
-    return await kv.get(key);
-  } catch {
-    return null;
-  }
-}
+import { Redis } from '@upstash/redis'
 
-async function kvSet(key: string, value: unknown, opts?: Record<string, unknown>): Promise<void> {
-  try {
-    const { kv } = await import('@vercel/kv');
-    if (opts) {
-      await (kv.set as (...args: unknown[]) => Promise<unknown>)(key, value, opts);
-    } else {
-      await kv.set(key, value);
-    }
-  } catch {
-    // KV not configured — skip storage
-  }
-}
+const kv = (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
 
 export async function POST(req: Request) {
   try {
@@ -61,7 +47,7 @@ export async function POST(req: Request) {
     const today = new Date().toISOString().split('T')[0];
 
     // ── LAYER 1: Already verified today? ──
-    const alreadyVerifiedToday = await kvGet(`verified:${address}:${today}`);
+    const alreadyVerifiedToday = kv ? await kv.get(`verified:${address}:${today}`) : null;
     if (alreadyVerifiedToday) {
       return NextResponse.json({
         verified: false,
@@ -77,7 +63,7 @@ export async function POST(req: Request) {
       .update(imageBase64)
       .digest('hex');
 
-    const existingHash = await kvGet(`image_hash:${imageHash}`);
+    const existingHash = kv ? await kv.get(`image_hash:${imageHash}`) : null;
     if (existingHash) {
       return NextResponse.json({
         verified: false,
@@ -301,14 +287,18 @@ Respond ONLY with this exact JSON, no markdown:
 
     // ── LAYER 5: Store on success only ──
     if (parsed.verified) {
-      await kvSet(`image_hash:${imageHash}`, {
-        address,
-        usedAt: new Date().toISOString(),
-        lat,
-        lng,
-      });
+      if (kv) {
+        await kv.set(`image_hash:${imageHash}`, {
+          address,
+          usedAt: new Date().toISOString(),
+          lat,
+          lng,
+        });
+      }
 
-      await kvSet(`verified:${address}:${today}`, true, { ex: 86400 });
+      if (kv) {
+        await kv.set(`verified:${address}:${today}`, true, { ex: 86400 });
+      }
     }
 
     return NextResponse.json(parsed);
