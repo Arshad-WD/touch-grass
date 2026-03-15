@@ -109,9 +109,9 @@ export default function LandingPage() {
         // Scroll Parallax
         star.y -= scrollDelta * 0.1;
 
-        // Mouse reaction lerp
-        lastMouseX += (mouseX - lastMouseX) * 0.05;
-        lastMouseY += (mouseY - lastMouseY) * 0.05;
+        // Mouse reaction lerp (Slower follow)
+        lastMouseX += (mouseX - lastMouseX) * 0.02;
+        lastMouseY += (mouseY - lastMouseY) * 0.02;
 
         const dx = (w / 2 - lastMouseX) * star.parallaxFactor;
         const dy = (h / 2 - lastMouseY) * star.parallaxFactor;
@@ -285,7 +285,7 @@ export default function LandingPage() {
           position: 'fixed', width: '800px', height: '800px', 
           top: mousePos.y, left: mousePos.x, transform: 'translate(-50%, -50%)',
           background: 'radial-gradient(circle, rgba(168,196,74,0.08) 0%, transparent 70%)',
-          pointerEvents: 'none', zIndex: 0, transition: 'top 0.15s ease-out, left 0.15s ease-out'
+          pointerEvents: 'none', zIndex: 0, transition: 'top 0.4s cubic-bezier(0.23, 1, 0.32, 1), left 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
         }} />
 
         <div style={{
@@ -308,7 +308,7 @@ export default function LandingPage() {
               const x = 150 + (i - 6) * 15;
               const h = 40 + Math.random() * 40;
               const swayIdx = (i % 7) + 1;
-              const speed = 3 + Math.random() * 4;
+              const speed = 8 + Math.random() * 8; // Slower: 8s to 16s
               return (
                 <path 
                   key={i}
