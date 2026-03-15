@@ -6,7 +6,7 @@ import StreakSection from '@/components/landing/StreakSection';
 
 export default function Home() {
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden bg-near-black">
+    <div className="flex flex-col w-full h-full overflow-hidden bg-black">
       <HeroSection />
       <HowItWorksSection />
       <LeaderboardSection />

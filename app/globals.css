@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-fresh-grass: #A8C44A;
+  --color-deep-grass: #2D4A0F;
+}
 
 @layer base {
   :root {
