@@ -90,7 +90,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-black flex flex-col items-center justify-end -mt-20">
+    <div className="relative w-full min-h-screen overflow-hidden bg-black flex flex-col items-center justify-center -mt-20">
       {/* Layer 1: Stars */}
       <canvas
         ref={canvasRef}
@@ -108,14 +108,14 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Layer 3: Floating SVG Ethereal Grass */}
-      <div className="absolute z-[2] top-[20%] left-1/2 -translate-x-1/2 pointer-events-none opacity-80"
+      {/* Layer 3: Floating SVG Ethereal Grass (Behind text) */}
+      <div className="absolute z-0 bottom-0 left-1/2 -translate-x-1/2 pointer-events-none opacity-80"
            style={{ filter: 'drop-shadow(0 0 20px rgba(168,196,74,0.3))' }}>
          <motion.div
            animate={{ y: [-10, 0, -10] }}
            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
          >
-            <svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="400" height="200" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <motion.path d="M 180,350 Q 150,200 130,100" stroke="#2D4A0F" strokeWidth="4" strokeLinecap="round"
                     animate={{ rotate: [-2, 2, -2], transformOrigin: 'bottom center' }}
                     transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }} />
@@ -142,7 +142,7 @@ export default function HeroSection() {
       </div>
 
       {/* Layer 4: Content */}
-      <div className="relative z-10 w-full max-w-4xl px-4 flex flex-col items-center text-center pb-[20vh]">
+      <div className="relative z-10 w-full max-w-4xl px-4 flex flex-col items-center text-center">
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -188,14 +188,36 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row items-center gap-4"
+            style={{ display: 'flex', gap: '12px', justifyContent: 'center', alignItems: 'center', marginTop: '32px' }}
         >
-            <button className="w-full sm:w-auto bg-white/10 backdrop-blur-[10px] border border-white/20 text-white px-8 py-3.5 text-xs tracking-[0.15em] font-sans rounded hover:bg-white/20 hover:border-white/40 transition-all duration-300 uppercase">
-                Stake Now
-            </button>
-            <button className="w-full sm:w-auto bg-[#A8C44A] text-black px-8 py-3.5 text-xs tracking-[0.15em] font-sans border-none rounded hover:bg-[#C4E056] hover:-translate-y-[1px] transition-all duration-300 uppercase">
-                Learn More
-            </button>
+          <button style={{
+            background: 'rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.25)',
+            color: 'white',
+            padding: '14px 36px',
+            fontSize: '11px',
+            letterSpacing: '0.18em',
+            fontFamily: 'var(--font-sans), sans-serif',
+            borderRadius: '3px',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+          }}>STAKE NOW</button>
+
+          <button style={{
+            background: '#A8C44A',
+            border: 'none',
+            color: '#000000',
+            padding: '14px 36px',
+            fontSize: '11px',
+            letterSpacing: '0.18em',
+            fontFamily: 'var(--font-sans), sans-serif',
+            fontWeight: 600,
+            borderRadius: '3px',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+          }}>LEARN MORE</button>
         </motion.div>
       </div>
 

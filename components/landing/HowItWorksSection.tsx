@@ -6,31 +6,32 @@ import { motion } from 'framer-motion';
 const steps = [
   {
     num: "01",
-    title: "Stake STRK",
-    desc: "Lock your STRK tokens in the smart contract. Your capital generates base yield while securing the network.",
+    title: "Stake",
+    desc: "Lock your STRK on Sepolia. Your yield starts accumulating immediately.",
     icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-.81-8.163-2.182m15.686 0A5.969 5.969 0 0121 12a5.969 5.969 0 01-5.969 5.969M12 10.5c3.27 0 6.273 1.18 8.441 3.12m-8.441-3.12a11.954 11.954 0 01-8.441 3.12M12 10.5c-3.27 0-6.273 1.18-8.441 3.12m0 0A5.969 5.969 0 003 12c0 2.5 1.5 4.64 3.666 5.56" />
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: '#A8C44A', strokeWidth: 1.5 }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8m0 0a4 4 0 014-4h0a4 4 0 00-4-4h0a4 4 0 00-4 4h0a4 4 0 014 4z" />
         </svg>
     )
   },
   {
     num: "02",
     title: "Go Outside",
-    desc: "Take a daily photo of nature with your phone. Our AI vision and GPS anti-cheat system verifies you are actually outdoors.",
+    desc: "Leave your screen. Find grass. Take a photo. GPS confirms your location.",
     icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636" />
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: '#A8C44A', strokeWidth: 1.5 }}>
+            <circle cx="12" cy="12" r="5" strokeLinecap="round" strokeLinejoin="round" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364-7.364l-1.414 1.414M6.05 17.95l-1.414 1.414m12.728 0l-1.414-1.414M6.05 6.05L4.636 4.636" />
         </svg>
     )
   },
   {
     num: "03",
     title: "Unlock Yield",
-    desc: "Every verified day builds your streak. Higher streaks multiply your base yield. Miss a day, and the streak resets.",
+    desc: "Groq AI verifies your outdoor photo. Yield released. Streak grows.",
     icon: (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: '#A8C44A', strokeWidth: 1.5 }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0l-7 7m7-7l7 7" />
         </svg>
     )
   }
@@ -68,38 +69,76 @@ export default function HowItWorksSection() {
             <h2 className="font-serif text-[56px] text-white">The Cycle</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mobile-stack-grid" style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '24px',
+                maxWidth: '900px',
+                margin: '0 auto',
+            }}>
           {steps.map((step, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ 
-                duration: 0.7, 
-                delay: 0.15 + (index * 0.15), 
-                ease: [0.25, 0.46, 0.45, 0.94] 
+                duration: 0.6, 
+                delay: index * 0.15, 
+                ease: "easeOut"
               }}
-              className="relative overflow-hidden group border border-white/5 bg-white/[0.03] rounded-[2px] p-10 hover:border-[#A8C44A]/30 hover:bg-[#A8C44A]/[0.03] transition-colors duration-300"
+              className="cycle-card group"
             >
-              <div className="w-6 h-6 text-[#A8C44A] mb-8">
+              <div className="w-6 h-6 mb-6">
                 {step.icon}
               </div>
               
-              <h3 className="font-sans font-medium text-[18px] text-white mb-4">
+              <h3 className="font-sans font-medium text-[16px] text-white mb-2">
                 {step.title}
               </h3>
               
-              <p className="font-sans text-[14px] text-[#666666] leading-[1.7] relative z-10 pr-4">
+              <p className="font-sans text-[13px] text-[#555555] leading-[1.7] relative z-10 pr-4">
                 {step.desc}
               </p>
 
-              <span className="absolute bottom-6 right-8 font-serif text-[80px] text-white/[0.04] leading-none select-none pointer-events-none group-hover:text-[#A8C44A]/[0.04] transition-colors duration-300">
+              <span className="card-number">
                 {step.num}
               </span>
             </motion.div>
           ))}
         </div>
       </div>
+      
+      {/* Inline styles for custom card logic requested */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @media (max-width: 768px) {
+            .mobile-stack-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        .cycle-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 3px;
+            padding: 40px 32px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+        .cycle-card:hover {
+            border-color: rgba(168,196,74,0.35);
+        }
+        .card-number {
+            position: absolute;
+            bottom: -15px;
+            right: 10px;
+            font-family: var(--font-serif), serif;
+            font-size: 96px;
+            color: rgba(255,255,255,0.04);
+            line-height: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+      `}} />
     </section>
   );
 }

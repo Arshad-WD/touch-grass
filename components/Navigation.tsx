@@ -36,8 +36,8 @@ export default function Navigation() {
       <div className="max-w-[1200px] mx-auto px-6 md:px-12 flex items-center justify-between">
         
         {/* Left: Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <svg width="20" height="24" viewBox="0 0 80 120" fill="none" className="group-hover:scale-105 transition-transform duration-300">
+        <Link href="/" className="flex items-center gap-2 group">
+          <svg width="20" height="20" viewBox="0 0 80 120" fill="none" className="group-hover:scale-105 transition-transform duration-300">
             <path
               d="M 40,110 C 40,110 10,70 20,30 C 30,-10 70,10 60,50 C 50,90 40,110 40,110 Z"
               stroke="#A8C44A"
@@ -54,44 +54,34 @@ export default function Navigation() {
         {/* Right: Links + Connect Button */}
         <div className="flex items-center gap-8">
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.path;
-              return (
-                <Link
-                  key={link.path}
-                  href={link.path}
-                  className={`font-sans text-[12px] tracking-[0.05em] transition-colors duration-200 ${
-                    isActive ? 'text-white' : 'text-[#666666] hover:text-white'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
+            <Link href="/#how-it-works" className="font-sans text-[11px] font-medium text-[#666666] tracking-[0.15em] hover:text-white uppercase transition-colors">HOW IT WORKS</Link>
+            <Link href="/#leaderboard" className="font-sans text-[11px] font-medium text-[#666666] tracking-[0.15em] hover:text-white uppercase transition-colors">LEADERBOARD</Link>
+            <Link href="/stake" className="font-sans text-[11px] font-medium text-[#666666] tracking-[0.15em] hover:text-white uppercase transition-colors">STAKE</Link>
+            <Link href="/claim" className="font-sans text-[11px] font-medium text-[#666666] tracking-[0.15em] hover:text-white uppercase transition-colors">CLAIM</Link>
           </div>
 
           {!isConnected ? (
             <button
               onClick={connectWallet}
-              className="bg-transparent border border-white/15 text-white px-5 py-2 text-[12px] tracking-[0.1em] font-sans rounded-[2px] transition-all duration-300 hover:border-white/40 hover:bg-white/5 uppercase"
+              className="bg-transparent border border-white/20 text-white px-6 py-2 text-[11px] tracking-[0.15em] font-sans font-medium rounded-[3px] transition-all duration-300 hover:border-white/40 hover:bg-white/5 uppercase"
             >
               Connect Wallet
             </button>
           ) : (
-             <div className="flex items-center gap-4">
-                <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-[2px]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#A8C44A] shadow-[0_0_8px_#A8C44A]" />
-                  <span className="font-mono text-[11px] text-[#999999] tracking-wider">
-                    {address?.slice(0, 6)}...{address?.slice(-4)}
-                  </span>
-                </div>
-                <button
-                  onClick={disconnectWallet}
-                  className="bg-transparent border border-white/15 text-white/50 px-4 py-2 text-[10px] tracking-[0.1em] font-sans rounded-[2px] transition-all duration-300 hover:border-white/40 hover:text-white uppercase"
-                >
-                  Disconnect
-                </button>
-             </div>
+            <div className="flex items-center gap-4">
+               <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-[2px]">
+                 <div className="w-1.5 h-1.5 rounded-full bg-[#A8C44A] shadow-[0_0_8px_#A8C44A]" />
+                 <span className="font-mono text-[11px] text-[#999999] tracking-wider">
+                   {address?.slice(0, 6)}...{address?.slice(-4)}
+                 </span>
+               </div>
+               <button
+                 onClick={disconnectWallet}
+                 className="bg-transparent border border-white/15 text-white/50 px-4 py-2 text-[10px] tracking-[0.1em] font-sans rounded-[2px] transition-all duration-300 hover:border-white/40 hover:text-white uppercase"
+               >
+                 Disconnect
+               </button>
+            </div>
           )}
         </div>
       </div>
