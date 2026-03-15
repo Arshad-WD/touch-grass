@@ -1,147 +1,192 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Loader2, Check } from 'lucide-react';
-import Link from 'next/link';
-import { useWallet } from '@/context/WalletContext';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function StakePage() {
-  const { isConnected, connectWallet, address } = useWallet();
-  const [amount, setAmount] = useState('');
-  const [isStaking, setIsStaking] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [txHash, setTxHash] = useState('');
+  const router = useRouter();
 
-  const handleStake = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!amount || isNaN(Number(amount))) return;
-    
-    setIsStaking(true);
-    
-    // Simulate transaction delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Mock success
-    setTxHash('0x' + Array.from({length: 40}, () => Math.floor(Math.random() * 16).toString(16)).join(''));
-    setIsSuccess(true);
-    setIsStaking(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [amount, setAmount] = useState<string>('');
+  const [staking, setStaking] = useState(false);
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const [balance, setBalance] = useState('0.00');
+
+  useEffect(() => {
+    const savedAddress = localStorage.getItem('walletAddress');
+    if (savedAddress) {
+      setWalletAddress(savedAddress);
+      // Mock fetching balance for demo purposes
+      setBalance('500.00');
+    }
+  }, []);
+
+  const estimatedYield = (parseFloat(amount) || 0) * 0.00096;
+
+  const connectWallet = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const starknet = (window as any).starknet;
+    if (!starknet) {
+      alert('Please install Argent X or Braavos wallet');
+      return;
+    }
+    await starknet.enable();
+    const address = starknet.selectedAddress;
+    setWalletAddress(address);
+    localStorage.setItem('walletAddress', address);
+    setBalance('500.00');
   };
 
-  const handleConnect = (e: React.MouseEvent) => {
-    e.preventDefault();
-    connectWallet();
+  const handleStake = async () => {
+    setStaking(true);
+    try {
+      const res = await fetch('/api/stake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          address: walletAddress
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTxHash(data.txHash);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setStaking(false);
   };
+
+  const isDisabled = !amount || parseFloat(amount) <= 0 || staking || !walletAddress;
 
   return (
-    <div className="min-h-screen bg-black pt-32 px-6">
-      <div className="max-w-[480px] mx-auto">
-        <Link href="/" className="inline-flex items-center gap-2 text-[#666666] hover:text-white transition-colors mb-16 font-sans text-[11px] tracking-[0.2em] uppercase">
-          <ArrowLeft size={14} />
-          Return
-        </Link>
-
-        <AnimatePresence mode="wait">
-          {!isSuccess ? (
-            <motion.div
-              key="stake-form"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              <h1 className="font-serif text-[56px] text-white leading-tight mb-12 text-center">Stake STRK</h1>
-              
-              <div className="bg-white/[0.03] border border-white/[0.08] rounded-[4px] p-12">
-                <form onSubmit={handleStake} className="space-y-12">
-                  <div className="space-y-4 text-center">
-                    <label className="font-sans text-[11px] text-[#444444] tracking-[0.2em] uppercase block">
-                      Amount to Stake
-                    </label>
-                    <input
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      placeholder="0.00"
-                      className="w-full bg-transparent border-none border-b border-[#333333] text-white font-serif text-[48px] text-center focus:outline-none focus:border-[#A8C44A] transition-colors py-4 appearance-none placeholder-[#222222]"
-                      style={{ MozAppearance: 'textfield' }}
-                    />
-                    {isConnected && (
-                      <p className="font-sans text-[11px] text-[#A8C44A] tracking-wider text-right">
-                        Balance: 500.25 STRK
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="w-full h-[1px] bg-[#111111]" />
-
-                  <div className="flex justify-between items-center">
-                      <div>
-                          <p className="font-sans text-[11px] text-[#444444] tracking-[0.2em] mb-2 uppercase">Proj. Daily Rate</p>
-                          <p className="font-sans text-[14px] text-white">~35% APR</p>
-                      </div>
-                      <div className="text-right">
-                          <p className="font-sans text-[11px] text-[#444444] tracking-[0.2em] mb-2 uppercase">Unlock Yield</p>
-                          <p className="font-sans text-[14px] text-[#A8C44A]">via daily verification</p>
-                      </div>
-                  </div>
-
-                  {!isConnected ? (
-                    <button
-                      type="button"
-                      onClick={handleConnect}
-                      className="w-full bg-[#A8C44A] text-black py-4 font-sans text-[12px] tracking-[0.15em] rounded-[2px] transition-all hover:brightness-110 uppercase"
-                    >
-                      Connect to Stake
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      disabled={isStaking || !amount || Number(amount) <= 0}
-                      className="w-full bg-[#A8C44A] text-black py-4 font-sans text-[12px] tracking-[0.15em] rounded-[2px] transition-all hover:brightness-110 uppercase disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
-                    >
-                      {isStaking ? <><Loader2 size={16} className="animate-spin" /> Approving...</> : 'Confirm Stake'}
-                    </button>
-                  )}
-                </form>
-              </div>
-            </motion.div>
+    <div style={{ minHeight: '100vh', background: '#000', paddingTop: '64px' }}>
+      
+      {/* Navigation */}
+      <nav style={{ position: 'fixed', top: 0, width: '100%', zIndex: 100, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #111' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <a href="/" style={{ fontFamily: 'var(--serif)', fontSize: '18px', color: 'white', letterSpacing: '-0.01em' }}>
+            ← Touch Grass.
+          </a>
+          {walletAddress ? (
+            <button style={{ background: 'transparent', border: '1px solid #333', color: '#888', padding: '8px 16px', fontSize: '11px', letterSpacing: '0.1em', borderRadius: '2px' }}>
+              {walletAddress.slice(0,6)}...{walletAddress.slice(-4)}
+            </button>
           ) : (
-            <motion.div
-              key="stake-success"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 rounded-full bg-[#A8C44A]/10 border border-[#A8C44A]/30 flex items-center justify-center mx-auto mb-8">
-                <Check className="text-[#A8C44A]" size={24} />
-              </div>
-              
-              <h1 className="font-serif text-[48px] text-white mb-6 leading-tight">Stake Active</h1>
-              <p className="font-sans text-[#666666] mb-12">Your capital is now secured. Go outside to claim your first yield.</p>
-
-              <div className="bg-[#A8C44A]/[0.04] border border-[#A8C44A]/20 rounded-[2px] p-8 space-y-4 mb-12">
-                <div className="flex justify-between text-[11px] font-sans tracking-wide">
-                  <span className="text-[#666666] uppercase">Amount Staked</span>
-                  <span className="text-white font-mono">{Number(amount).toFixed(2)} STRK</span>
-                </div>
-                <div className="flex justify-between text-[11px] font-sans tracking-wide">
-                  <span className="text-[#666666] uppercase">Txn Hash</span>
-                  <span className="text-[#666666] font-mono">{txHash.slice(0, 10)}...{txHash.slice(-8)}</span>
-                </div>
-              </div>
-
-              <Link
-                href="/"
-                className="w-full inline-block bg-[#A8C44A] text-black py-4 font-sans text-[12px] tracking-[0.15em] rounded-[2px] transition-all hover:brightness-110 uppercase"
-              >
-                Return to Dashboard
-              </Link>
-            </motion.div>
+            <button onClick={connectWallet} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '8px 20px', fontSize: '11px', letterSpacing: '0.12em', borderRadius: '2px' }}>
+              CONNECT
+            </button>
           )}
-        </AnimatePresence>
-      </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main style={{ maxWidth: '560px', margin: '0 auto', padding: '80px 40px' }}>
+        <h1 style={{ fontFamily: 'var(--serif)', fontSize: 'clamp(40px, 6vw, 72px)', fontWeight: 400, marginBottom: '8px' }}>
+          Initiate Stake.
+        </h1>
+        <p style={{ fontSize: '13px', color: '#444', marginBottom: '60px', letterSpacing: '0.02em' }}>
+          Lock your STRK. Go outside. Earn yield.
+        </p>
+
+        {!txHash ? (
+          <>
+            {/* Input Section */}
+            <label style={{ fontSize: '10px', color: '#333', letterSpacing: '0.2em', textTransform: 'uppercase', display: 'block', marginBottom: '16px' }}>
+              Amount
+            </label>
+            <div style={{ position: 'relative', marginBottom: '48px' }}>
+              <input
+                type="number"
+                value={amount}
+                onChange={e => setAmount(e.target.value)}
+                placeholder="0.0000"
+                style={{
+                  width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid #222', color: 'white', fontSize: '48px', fontFamily: 'var(--serif)', padding: '8px 80px 16px 0', outline: 'none', transition: 'border-color 0.2s',
+                }}
+                onFocus={e => e.target.style.borderBottomColor = 'var(--green)'}
+                onBlur={e => e.target.style.borderBottomColor = '#222'}
+              />
+              <span style={{ position: 'absolute', right: 0, bottom: '16px', fontSize: '16px', color: '#333' }}>STRK</span>
+              <button
+                onClick={() => setAmount(balance)}
+                style={{ position: 'absolute', right: 0, top: 0, background: 'transparent', border: '1px solid #222', color: '#444', padding: '4px 10px', fontSize: '10px', letterSpacing: '0.1em', transition: 'all 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = 'white'}
+                onMouseLeave={e => e.currentTarget.style.color = '#444'}
+              >
+                MAX
+              </button>
+            </div>
+
+            {/* Stats Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: '#0D0D0D', border: '1px solid #0D0D0D', marginBottom: '40px' }}>
+              <div style={{ background: '#000', padding: '20px 24px' }}>
+                <p style={{ fontSize: '10px', color: '#333', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '8px' }}>Available Balance</p>
+                <p style={{ fontSize: '14px', color: 'white' }}>{balance} STRK</p>
+              </div>
+              <div style={{ background: '#000', padding: '20px 24px' }}>
+                <p style={{ fontSize: '10px', color: '#333', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '8px' }}>Daily Yield</p>
+                <p style={{ fontSize: '14px', color: 'var(--green)' }}>+{estimatedYield.toFixed(4)} STRK</p>
+              </div>
+              <div style={{ background: '#000', padding: '20px 24px' }}>
+                <p style={{ fontSize: '10px', color: '#333', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '8px' }}>Network</p>
+                <p style={{ fontSize: '14px', color: 'white' }}>Starknet Sepolia</p>
+              </div>
+              <div style={{ background: '#000', padding: '20px 24px' }}>
+                <p style={{ fontSize: '10px', color: '#333', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '8px' }}>Gas Fee</p>
+                <p style={{ fontSize: '14px', color: 'var(--green)' }}>Free (Gasless)</p>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              disabled={isDisabled}
+              onClick={handleStake}
+              style={{
+                width: '100%', background: isDisabled ? '#0A0A0A' : 'var(--green)', border: isDisabled ? '1px solid #111' : 'none', color: isDisabled ? '#222' : '#000', padding: '18px', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', borderRadius: '2px', transition: 'all 0.3s', cursor: isDisabled ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {!walletAddress ? 'CONNECT WALLET FIRST' : staking ? 'STAKING...' : 'STAKE STRK'}
+            </button>
+          </>
+        ) : (
+          /* Receipt */
+          <div style={{ border: '1px solid var(--green-dim)', background: 'var(--green-glow)', padding: '40px', borderRadius: '2px' }}>
+            <p style={{ fontSize: '10px', color: 'var(--green)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '32px' }}>
+              ✓ Stake Confirmed
+            </p>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 0', borderTop: '1px solid #0D0D0D', fontSize: '13px' }}>
+              <span style={{ color: '#444' }}>Amount Staked</span>
+              <span style={{ color: 'white' }}>{amount} STRK</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 0', borderTop: '1px solid #0D0D0D', fontSize: '13px' }}>
+              <span style={{ color: '#444' }}>Network</span>
+              <span style={{ color: 'white' }}>Starknet Sepolia</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 0', borderTop: '1px solid #0D0D0D', fontSize: '13px' }}>
+              <span style={{ color: '#444' }}>Status</span>
+              <span style={{ color: 'var(--green)' }}>Confirmed</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 0', borderTop: '1px solid #0D0D0D', fontSize: '13px' }}>
+              <span style={{ color: '#444' }}>Transaction</span>
+              <a href={`https://sepolia.starkscan.co/tx/${txHash}`} target="_blank" rel="noreferrer" style={{ color: 'white', textDecoration: 'underline' }}>
+                {txHash.slice(0, 8)}...{txHash.slice(-6)}
+              </a>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', marginTop: '32px', flexWrap: 'wrap' }}>
+              <a href={`https://sepolia.starkscan.co/tx/${txHash}`} target="_blank" rel="noreferrer" style={{ background: 'transparent', border: '1px solid #222', color: '#666', padding: '12px 24px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center', flex: 1 }}>
+                VIEW ON STARKSCAN
+              </a>
+              <button onClick={() => router.push('/claim')} style={{ background: 'var(--green)', border: 'none', color: '#000', padding: '12px 24px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em', flex: 1 }}>
+                CLAIM YIELD →
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

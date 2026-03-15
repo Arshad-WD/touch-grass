@@ -1,0 +1,96 @@
+app/claim/page.tsx(124,48): error TS1127: Invalid character.
+app/claim/page.tsx(125,34): error TS1109: Expression expected.
+app/claim/page.tsx(125,62): error TS1005: ',' expected.
+app/claim/page.tsx(125,66): error TS1005: '}' expected.
+app/claim/page.tsx(125,81): error TS1005: '}' expected.
+app/claim/page.tsx(125,95): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/claim/page.tsx(125,97): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/claim/page.tsx(126,9): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/claim/page.tsx(126,10): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/claim/page.tsx(126,13): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+app/claim/page.tsx(245,27): error TS1127: Invalid character.
+app/claim/page.tsx(247,17): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/claim/page.tsx(247,18): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/claim/page.tsx(247,19): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+app/claim/page.tsx(253,19): error TS17015: Expected corresponding closing tag for JSX fragment.
+app/claim/page.tsx(253,22): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+app/claim/page.tsx(254,16): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/claim/page.tsx(271,15): error TS1003: Identifier expected.
+app/claim/page.tsx(272,12): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/claim/page.tsx(273,11): error TS17002: Expected corresponding JSX closing tag for 'div'.
+app/claim/page.tsx(274,9): error TS17015: Expected corresponding closing tag for JSX fragment.
+app/claim/page.tsx(275,5): error TS1109: Expression expected.
+app/claim/page.tsx(275,7): error TS1109: Expression expected.
+app/claim/page.tsx(276,3): error TS1109: Expression expected.
+app/page.tsx(334,71): error TS1127: Invalid character.
+app/page.tsx(334,204): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/page.tsx(334,205): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/page.tsx(335,158): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+app/page.tsx(345,13): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/page.tsx(347,11): error TS17002: Expected corresponding JSX closing tag for 'section'.
+app/page.tsx(348,9): error TS17015: Expected corresponding closing tag for JSX fragment.
+app/page.tsx(351,16): error TS1005: ';' expected.
+app/page.tsx(351,33): error TS1005: ';' expected.
+app/page.tsx(351,40): error TS1136: Property assignment expected.
+app/page.tsx(351,73): error TS1005: ';' expected.
+app/page.tsx(351,90): error TS1005: ';' expected.
+app/page.tsx(351,110): error TS1005: ';' expected.
+app/page.tsx(351,130): error TS1005: ';' expected.
+app/page.tsx(351,137): error TS1109: Expression expected.
+app/page.tsx(352,9): error TS2657: JSX expressions must have one parent element.
+app/page.tsx(394,7): error TS1128: Declaration or statement expected.
+app/page.tsx(397,16): error TS1005: ';' expected.
+app/page.tsx(397,23): error TS1136: Property assignment expected.
+app/page.tsx(397,55): error TS1005: ';' expected.
+app/page.tsx(397,78): error TS1005: ';' expected.
+app/page.tsx(397,100): error TS1005: ';' expected.
+app/page.tsx(397,120): error TS1005: ';' expected.
+app/page.tsx(397,140): error TS1005: ';' expected.
+app/page.tsx(397,146): error TS1128: Declaration or statement expected.
+app/page.tsx(397,147): error TS1109: Expression expected.
+app/page.tsx(398,9): error TS2657: JSX expressions must have one parent element.
+app/page.tsx(403,24): error TS1127: Invalid character.
+app/page.tsx(405,11): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/page.tsx(405,12): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/page.tsx(405,13): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+app/page.tsx(430,9): error TS1128: Declaration or statement expected.
+app/page.tsx(431,7): error TS1109: Expression expected.
+app/page.tsx(434,16): error TS1005: ';' expected.
+app/page.tsx(434,23): error TS1136: Property assignment expected.
+app/page.tsx(434,56): error TS1005: ';' expected.
+app/page.tsx(434,73): error TS1005: ';' expected.
+app/page.tsx(434,94): error TS1005: ';' expected.
+app/page.tsx(434,114): error TS1005: ';' expected.
+app/page.tsx(434,134): error TS1005: ';' expected.
+app/page.tsx(434,140): error TS1128: Declaration or statement expected.
+app/page.tsx(434,141): error TS1109: Expression expected.
+app/page.tsx(435,9): error TS2657: JSX expressions must have one parent element.
+app/page.tsx(441,65): error TS1127: Invalid character.
+app/page.tsx(441,140): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/page.tsx(441,141): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/page.tsx(441,142): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+app/page.tsx(444,11): error TS1128: Declaration or statement expected.
+app/page.tsx(444,12): error TS1128: Declaration or statement expected.
+app/page.tsx(444,13): error TS1128: Declaration or statement expected.
+app/page.tsx(445,9): error TS1128: Declaration or statement expected.
+app/page.tsx(455,7): error TS1128: Declaration or statement expected.
+app/page.tsx(458,15): error TS1005: ';' expected.
+app/page.tsx(458,22): error TS1136: Property assignment expected.
+app/page.tsx(458,55): error TS1005: ';' expected.
+app/page.tsx(458,85): error TS1005: ';' expected.
+app/page.tsx(458,109): error TS1005: ';' expected.
+app/page.tsx(458,138): error TS1005: ';' expected.
+app/page.tsx(458,158): error TS1005: ';' expected.
+app/page.tsx(458,176): error TS1005: ';' expected.
+app/page.tsx(458,196): error TS1005: ';' expected.
+app/page.tsx(458,216): error TS1005: ';' expected.
+app/page.tsx(458,230): error TS1005: ';' expected.
+app/page.tsx(458,243): error TS1005: ';' expected.
+app/page.tsx(458,253): error TS1128: Declaration or statement expected.
+app/page.tsx(458,254): error TS1109: Expression expected.
+app/page.tsx(459,9): error TS2657: JSX expressions must have one parent element.
+app/page.tsx(464,7): error TS1128: Declaration or statement expected.
+app/page.tsx(466,5): error TS1109: Expression expected.
+app/page.tsx(466,7): error TS1109: Expression expected.
+app/page.tsx(467,3): error TS1109: Expression expected.
+app/page.tsx(468,1): error TS1128: Declaration or statement expected.

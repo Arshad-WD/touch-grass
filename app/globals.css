@@ -1,54 +1,46 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --color-fresh-grass: #A8C44A;
-  --color-deep-grass: #2D4A0F;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --green: #A8C44A;
+  --green-dim: rgba(168, 196, 74, 0.15);
+  --green-glow: rgba(168, 196, 74, 0.06);
+  --grey-1: #111111;
+  --grey-2: #222222;
+  --grey-3: #444444;
+  --grey-4: #666666;
+  --grey-5: #888888;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'Inter', system-ui, sans-serif;
 }
 
-@layer base {
-  :root {
-    --background: #000000;
-    --foreground: #FFFFFF;
-    
-    --fresh-grass: #A8C44A;
-    --deep-grass: #2D4A0F;
-  }
+html { scroll-behavior: smooth; }
 
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-serif) !important;
-    font-weight: 400;
-  }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-@layer utilities {
-  .text-glow {
-    text-shadow: 0 0 20px rgba(168, 196, 74, 0.3);
-  }
-  
-  .glass-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 2px;
-  }
-}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: var(--sans); }
+input { font-family: var(--sans); }
 
-/* Base scrollbar styling for the dark theme */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
-::-webkit-scrollbar-track {
-  background: #000000;
-}
-::-webkit-scrollbar-thumb {
-  background: #222222;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #333333;
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
