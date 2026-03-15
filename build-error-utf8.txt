@@ -1,0 +1,181 @@
+﻿Ôû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+node.exe : Error: 
+Cannot apply unknown 
+utility class 
+`font-sans`. Are you 
+using CSS modules or 
+similar and missing 
+`@reference`? https://t
+ailwindcss.com/docs/fun
+ctions-and-directives#r
+eference-directive
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Users\Admin\AppData
+\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Error: Cannot   
+  a...rence-directi    
+ve:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+    [2m[at 
+onInvalidCandidate 
+(D:\FullStackDevlop Pro
+ject\Starkzap\node_modu
+les\tailwindcss\dist\li
+b.js:21:1314)][0m
+    [2m[at Ee 
+(D:\FullStackDevlop Pro
+ject\Starkzap\node_modu
+les\tailwindcss\dist\li
+b.js:16:37066)][0m
+    [2m[at 
+D:\FullStackDevlop Proj
+ect\Starkzap\node_modul
+es\tailwindcss\dist\lib
+.js:21:355][0m
+    [2m[at Pr 
+(D:\FullStackDevlop Pro
+ject\Starkzap\node_modu
+les\tailwindcss\dist\li
+b.js:3:1733)][0m
+    [2m[at _ 
+(D:\FullStackDevlop Pro
+ject\Starkzap\node_modu
+les\tailwindcss\dist\li
+b.js:3:1377)][0m
+    [2m[at Te 
+(D:\FullStackDevlop Pro
+ject\Starkzap\node_modu
+les\tailwindcss\dist\li
+b.js:21:172)][0m
+    [2m[at pn 
+(D:\FullStackDevlop Pro
+ject\Starkzap\node_modu
+les\tailwindcss\dist\li
+b.js:38:294)][0m
+    [2m[at process.pro
+cessTicksAndRejections 
+(node:internal/process/
+task_queues:105:5)][0m
+    [2m[at async dn 
+(D:\FullStackDevlop Pro
+ject\Starkzap\node_modu
+les\tailwindcss\dist\li
+b.js:38:631)][0m
+    [2m[at async Xr 
+(D:\FullStackDevlop Pro
+ject\Starkzap\node_modu
+les\@tailwindcss\node\d
+ist\index.js:10:3417)]
+[0m
+
+> Build error occurred
+Error: Turbopack build 
+failed with 1 errors:
+./app/globals.css
+Error evaluating 
+Node.js code
+CssSyntaxError: 
+tailwindcss: 
+D:\FullStackDevlop Proj
+ect\Starkzap\app\global
+s.css:1:1: Cannot 
+apply unknown utility 
+class `font-sans`. Are 
+you using CSS modules 
+or similar and missing 
+`@reference`? https://t
+ailwindcss.com/docs/fun
+ctions-and-directives#r
+eference-directive
+    at Input.error (nod
+e_modules/postcss/lib/i
+nput.js:135:16) 
+[D:\FullStackDevlop Pro
+ject\Starkzap\.next\bui
+ld\chunks\node_modules_
+fe693df6._.js:4651:22]
+    at Root.error (node
+_modules/postcss/lib/no
+de.js:146:32) 
+[D:\FullStackDevlop Pro
+ject\Starkzap\.next\bui
+ld\chunks\node_modules_
+fe693df6._.js:928:38]
+    [at Object.Once 
+(D:\FullStackDevlop Pro
+ject\Starkzap\node_modu
+les\@tailwindcss\postcs
+s\dist\index.js:10:6913
+)]
+    [at process.process
+TicksAndRejections (nod
+e:internal/process/task
+_queues:105:5)]
+    at async 
+LazyResult.runAsync (no
+de_modules/postcss/lib/
+lazy-result.js:293:11) 
+[D:\FullStackDevlop Pro
+ject\Starkzap\.next\bui
+ld\chunks\node_modules_
+fe693df6._.js:6214:21]
+    at async transform 
+(turbopack:///[turbopac
+k-node]/transforms/post
+css.ts:70:34) 
+[D:\FullStackDevlop Pro
+ject\Starkzap\.next\bui
+ld\chunks\[root-of-the-
+server]__51225daf._.js:
+146:36]
+    at async run (turbo
+pack:///[turbopack-node
+]/ipc/evaluate.ts:92:23
+) [D:\FullStackDevlop P
+roject\Starkzap\.next\b
+uild\chunks\[root-of-th
+e-server]__974941ed._.j
+s:443:31]
+
+Import trace:
+  Client Component 
+Browser:
+    ./app/globals.css 
+[Client Component 
+Browser]
+    ./app/layout.tsx 
+[Server Component]
+
+
+    at async transform 
+(turbopack:///[turbopac
+k-node]/transforms/post
+css.ts:70:34) 
+[D:\FullStackDevlop Pro
+ject\Starkzap\.next\bui
+ld\chunks\[root-of-the-
+server]__51225daf._.js:
+146:36])
+    at async run (turbo
+pack:///[turbopack-node
+]/ipc/evaluate.ts:92:23
+) [D:\FullStackDevlop P
+roject\Starkzap\.next\b
+uild\chunks\[root-of-th
+e-server]__974941ed._.j
+s:443:31])

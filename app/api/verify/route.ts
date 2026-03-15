@@ -15,7 +15,7 @@ import * as exifr from 'exifr';
 console.log('GROQ_API_KEY configured:', !!process.env.GROQ_API_KEY);
 
 // Helper: KV wrapper that falls back gracefully when env vars are missing
-async function kvGet(key: string): Promise<any> {
+async function kvGet(key: string): Promise<unknown> {
   try {
     const { kv } = await import('@vercel/kv');
     return await kv.get(key);
@@ -24,11 +24,11 @@ async function kvGet(key: string): Promise<any> {
   }
 }
 
-async function kvSet(key: string, value: any, opts?: Record<string, any>): Promise<void> {
+async function kvSet(key: string, value: unknown, opts?: Record<string, unknown>): Promise<void> {
   try {
     const { kv } = await import('@vercel/kv');
     if (opts) {
-      await (kv.set as any)(key, value, opts);
+      await (kv.set as (...args: unknown[]) => Promise<unknown>)(key, value, opts);
     } else {
       await kv.set(key, value);
     }
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
     // ── LAYER 3: EXIF Date + GPS Cross-check ──
     const imageBuffer = Buffer.from(imageBase64, 'base64');
 
-    let exif: any = null;
+    let exif: unknown = null;
     try {
       exif = await exifr.parse(imageBuffer, {
         pick: ['DateTimeOriginal', 'CreateDate', 'GPSLatitude', 'GPSLongitude'],
@@ -99,8 +99,9 @@ export async function POST(req: Request) {
       // No EXIF data — proceed without this check
     }
 
-    if (exif?.DateTimeOriginal) {
-      const photoDate = new Date(exif.DateTimeOriginal);
+    const exifData = exif as Record<string, unknown>;
+    if (exifData?.DateTimeOriginal) {
+      const photoDate = new Date(exifData.DateTimeOriginal as string | number);
       const now = new Date();
       const hoursDiff = (now.getTime() - photoDate.getTime()) / (1000 * 60 * 60);
 
@@ -113,9 +114,9 @@ export async function POST(req: Request) {
         });
       }
 
-      if (exif.GPSLatitude != null && exif.GPSLongitude != null && lat && lng) {
-        const exifLat = exif.GPSLatitude;
-        const exifLng = exif.GPSLongitude;
+      if ((exif as Record<string, unknown>).GPSLatitude != null && (exif as Record<string, unknown>).GPSLongitude != null && lat && lng) {
+        const exifLat = (exif as Record<string, unknown>).GPSLatitude as number;
+        const exifLng = (exif as Record<string, unknown>).GPSLongitude as number;
         const providedLat = parseFloat(lat);
         const providedLng = parseFloat(lng);
         const distance = Math.sqrt(
@@ -228,7 +229,7 @@ Respond ONLY with this exact JSON, no markdown:
     const rawText = groqData.choices?.[0]?.message?.content?.trim() || '';
     const cleaned = rawText.replace(/```json|```/g, '').trim();
 
-    let parsed: any;
+    let parsed: Record<string, unknown>;
     try {
       parsed = JSON.parse(cleaned);
     } catch {
@@ -239,8 +240,10 @@ Respond ONLY with this exact JSON, no markdown:
       );
     }
 
+    const checks = parsed.checks as Record<string, unknown> | undefined;
+
     // ── Post-Groq cheat-specific rejections ──
-    if (parsed.checks?.isAIGenerated) {
+    if (checks?.isAIGenerated) {
       return NextResponse.json({
         verified: false,
         reason: 'This appears to be an AI-generated image. Please take a real photo.',
@@ -249,7 +252,7 @@ Respond ONLY with this exact JSON, no markdown:
       });
     }
 
-    if (parsed.checks?.isStockPhoto) {
+    if (checks?.isStockPhoto) {
       return NextResponse.json({
         verified: false,
         reason: 'This looks like a stock photo. Please take a genuine photo of yourself outside.',
@@ -258,7 +261,7 @@ Respond ONLY with this exact JSON, no markdown:
       });
     }
 
-    if (parsed.checks?.isScreenshot) {
+    if (checks?.isScreenshot) {
       return NextResponse.json({
         verified: false,
         reason: 'This appears to be a screenshot. Please upload a real photo.',
@@ -267,7 +270,7 @@ Respond ONLY with this exact JSON, no markdown:
       });
     }
 
-    if (parsed.checks?.isIndoor) {
+    if (checks?.isIndoor) {
       return NextResponse.json({
         verified: false,
         reason: 'This looks like an indoor photo. You need to go outside!',
@@ -277,7 +280,7 @@ Respond ONLY with this exact JSON, no markdown:
     }
 
     // Reject if no actual grass detected
-    if (!parsed.checks?.hasGrass) {
+    if (!checks?.hasGrass) {
       return NextResponse.json({
         verified: false,
         reason: 'No grass or natural ground visible in the photo. Show us the grass!',

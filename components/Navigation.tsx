@@ -1,127 +1,100 @@
 'use client';
 
-import React from 'react';
-import { Home, Sprout, Camera, Wallet, LogOut } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useWallet, truncateAddress } from '@/context/WalletContext';
+import { useWallet } from '@/context/WalletContext';
 
 export default function Navigation() {
+  const { address, isConnected, connectWallet, disconnectWallet } = useWallet();
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const { address, isConnected, isConnecting, connectWallet, disconnectWallet } = useWallet();
 
-  const links = [
-    { href: '/', label: 'Leaderboard', icon: Home },
-    { href: '/stake', label: 'Stake', icon: Sprout },
-    { href: '/claim', label: 'Claim', icon: Camera },
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { name: 'Leaderboard', path: '/' },
+    { name: 'Stake', path: '/stake' },
+    { name: 'Claim', path: '/claim' },
   ];
 
   return (
-    <>
-      <header className="fixed top-0 left-0 right-0 z-40 bg-near-black/60 backdrop-blur-xl border-b border-earth/40">
-        <div className="max-w-5xl mx-auto px-4 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-fresh-grass/10 border border-fresh-grass/30 flex items-center justify-center">
-              <span className="text-fresh-grass text-lg">🌿</span>
-            </div>
-            <span className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-cream-white leading-none">Touch Grass.</span>
-          </Link>
-          
-          <div className="hidden md:flex items-center gap-6">
-            <nav className="flex gap-1">
-              {links.map(({ href, label }) => {
-                const isActive = pathname === href;
-                return (
-                  <Link 
-                    key={href} 
-                    href={href} 
-                    className={`relative text-xs font-bold uppercase tracking-widest transition-all px-4 py-2 ${
-                      isActive 
-                        ? 'text-fresh-grass bg-fresh-grass/10' 
-                        : 'text-sand hover:text-cream-white hover:bg-cream-white/5'
-                    }`}
-                  >
-                    {label}
-                    {isActive && (
-                      <motion.div
-                        layoutId="nav-indicator"
-                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-fresh-grass"
-                      />
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-            <div className="h-8 w-px bg-earth/40" />
-            
-            {isConnected && address ? (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 bg-earth/20 border border-earth/30 px-4 py-2.5">
-                  <div className="w-2 h-2 rounded-full bg-fresh-grass animate-pulse" />
-                  <span className="font-mono text-xs text-cream-white tracking-wider">{truncateAddress(address)}</span>
-                </div>
-                <button 
-                  onClick={disconnectWallet}
-                  className="p-2.5 border border-earth/30 text-sand hover:text-cream-white hover:bg-earth/20 transition-colors"
-                  title="Disconnect"
-                >
-                  <LogOut size={14} />
-                </button>
-              </div>
-            ) : (
-              <button 
-                onClick={connectWallet}
-                disabled={isConnecting}
-                className="btn-primary py-2.5 px-6 flex items-center gap-2 text-xs"
-              >
-                <Wallet size={14} />
-                {isConnecting ? 'Connecting...' : 'Connect'}
-              </button>
-            )}
-          </div>
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+        scrolled 
+          ? 'bg-black/80 backdrop-blur-[20px] border-b border-white/5 py-4' 
+          : 'bg-transparent py-6'
+      }`}
+    >
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 flex items-center justify-between">
+        
+        {/* Left: Logo */}
+        <Link href="/" className="flex items-center gap-3 group">
+          <svg width="20" height="24" viewBox="0 0 80 120" fill="none" className="group-hover:scale-105 transition-transform duration-300">
+            <path
+              d="M 40,110 C 40,110 10,70 20,30 C 30,-10 70,10 60,50 C 50,90 40,110 40,110 Z"
+              stroke="#A8C44A"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="font-sans text-white text-[14px] font-medium tracking-wide">
+            Touch Grass.
+          </span>
+        </Link>
 
-          {/* Mobile connect button */}
-          <div className="md:hidden">
-            {isConnected && address ? (
-              <div className="flex items-center gap-2 bg-earth/20 border border-earth/30 px-3 py-2">
-                <div className="w-2 h-2 rounded-full bg-fresh-grass animate-pulse" />
-                <span className="font-mono text-[10px] text-cream-white">{truncateAddress(address)}</span>
-              </div>
-            ) : (
-              <button 
-                onClick={connectWallet}
-                disabled={isConnecting}
-                className="btn-primary py-2 px-4 flex items-center gap-2 text-xs"
-              >
-                <Wallet size={14} /> {isConnecting ? '...' : 'Connect'}
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Bottom Tab Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-near-black/90 backdrop-blur-xl border-t border-earth/40">
-        <ul className="flex items-center justify-around h-16">
-          {links.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href;
-            return (
-              <li key={href} className="w-full h-full">
-                <Link 
-                  href={href} 
-                  className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
-                    isActive ? 'text-fresh-grass' : 'text-sand hover:text-parchment'
+        {/* Right: Links + Connect Button */}
+        <div className="flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.path;
+              return (
+                <Link
+                  key={link.path}
+                  href={link.path}
+                  className={`font-sans text-[12px] tracking-[0.05em] transition-colors duration-200 ${
+                    isActive ? 'text-white' : 'text-[#666666] hover:text-white'
                   }`}
                 >
-                  <Icon size={20} className={isActive ? 'fill-fresh-grass/20' : ''} />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">{label}</span>
+                  {link.name}
                 </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-    </>
+              );
+            })}
+          </div>
+
+          {!isConnected ? (
+            <button
+              onClick={connectWallet}
+              className="bg-transparent border border-white/15 text-white px-5 py-2 text-[12px] tracking-[0.1em] font-sans rounded-[2px] transition-all duration-300 hover:border-white/40 hover:bg-white/5 uppercase"
+            >
+              Connect Wallet
+            </button>
+          ) : (
+             <div className="flex items-center gap-4">
+                <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-[2px]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#A8C44A] shadow-[0_0_8px_#A8C44A]" />
+                  <span className="font-mono text-[11px] text-[#999999] tracking-wider">
+                    {address?.slice(0, 6)}...{address?.slice(-4)}
+                  </span>
+                </div>
+                <button
+                  onClick={disconnectWallet}
+                  className="bg-transparent border border-white/15 text-white/50 px-4 py-2 text-[10px] tracking-[0.1em] font-sans rounded-[2px] transition-all duration-300 hover:border-white/40 hover:text-white uppercase"
+                >
+                  Disconnect
+                </button>
+             </div>
+          )}
+        </div>
+      </div>
+    </nav>
   );
 }

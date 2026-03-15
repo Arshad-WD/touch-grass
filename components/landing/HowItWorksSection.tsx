@@ -1,70 +1,101 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sprout, Sun, TrendingUp } from 'lucide-react';
 
 const steps = [
   {
     num: "01",
-    title: "Stake",
-    desc: "Lock your STRK on Sepolia.",
-    icon: Sprout
+    title: "Stake STRK",
+    desc: "Lock your STRK tokens in the smart contract. Your capital generates base yield while securing the network.",
+    icon: (
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-.81-8.163-2.182m15.686 0A5.969 5.969 0 0121 12a5.969 5.969 0 01-5.969 5.969M12 10.5c3.27 0 6.273 1.18 8.441 3.12m-8.441-3.12a11.954 11.954 0 01-8.441 3.12M12 10.5c-3.27 0-6.273 1.18-8.441 3.12m0 0A5.969 5.969 0 003 12c0 2.5 1.5 4.64 3.666 5.56" />
+        </svg>
+    )
   },
   {
     num: "02",
     title: "Go Outside",
-    desc: "Upload a photo + GPS to prove it.",
-    icon: Sun
+    desc: "Take a daily photo of nature with your phone. Our AI vision and GPS anti-cheat system verifies you are actually outdoors.",
+    icon: (
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636" />
+        </svg>
+    )
   },
   {
     num: "03",
     title: "Unlock Yield",
-    desc: "AI verifies you. Yield starts flowing.",
-    icon: TrendingUp
+    desc: "Every verified day builds your streak. Higher streaks multiply your base yield. Miss a day, and the streak resets.",
+    icon: (
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+        </svg>
+    )
   }
 ];
 
 export default function HowItWorksSection() {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="relative w-full py-32 bg-dark-soil px-4">
-      <div className="max-w-5xl mx-auto">
+    <section className="bg-black py-32 border-t border-[#111111]" id="how-it-works" ref={ref}>
+      <div className="max-w-[1000px] mx-auto px-6">
+        
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="text-center mb-24"
         >
-          <h2 className="font-serif text-5xl md:text-6xl text-cream-white mb-6">The Cycle</h2>
-          <div className="w-16 h-px bg-earth mx-auto" />
+            <h2 className="font-serif text-[56px] text-white">The Cycle</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {steps.map((step, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="relative card-earthy overflow-hidden group hover:-translate-y-2"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ 
+                duration: 0.7, 
+                delay: 0.15 + (index * 0.15), 
+                ease: [0.25, 0.46, 0.45, 0.94] 
+              }}
+              className="relative overflow-hidden group border border-white/5 bg-white/[0.03] rounded-[2px] p-10 hover:border-[#A8C44A]/30 hover:bg-[#A8C44A]/[0.03] transition-colors duration-300"
             >
-              {/* Massive faded number behind */}
-              <span className="absolute -bottom-6 -right-4 font-serif text-[120px] font-bold text-earth/20 leading-none pointer-events-none select-none transition-transform group-hover:scale-110 duration-500">
+              <div className="w-6 h-6 text-[#A8C44A] mb-8">
+                {step.icon}
+              </div>
+              
+              <h3 className="font-sans font-medium text-[18px] text-white mb-4">
+                {step.title}
+              </h3>
+              
+              <p className="font-sans text-[14px] text-[#666666] leading-[1.7] relative z-10 pr-4">
+                {step.desc}
+              </p>
+
+              <span className="absolute bottom-6 right-8 font-serif text-[80px] text-white/[0.04] leading-none select-none pointer-events-none group-hover:text-[#A8C44A]/[0.04] transition-colors duration-300">
                 {step.num}
               </span>
-
-              <div className="relative z-10 flex flex-col h-full space-y-6">
-                <div className="w-12 h-12 rounded-full border border-earth flex items-center justify-center bg-near-black text-fresh-grass">
-                  <step.icon size={20} />
-                </div>
-                
-                <div className="space-y-2 mt-auto">
-                  <h3 className="font-serif text-2xl font-bold">{step.title}</h3>
-                  <p className="text-sand font-sans uppercase text-xs tracking-widest font-bold leading-relaxed">{step.desc}</p>
-                </div>
-              </div>
             </motion.div>
           ))}
         </div>

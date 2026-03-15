@@ -68,6 +68,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setIsConnecting(true);
     try {
       const { connect } = await import('get-starknet');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const starknet: any = await connect();
       
       if (!starknet) {

@@ -37,7 +37,7 @@ export async function GET() {
 
     // Build entries from user hashes
     const entries = await Promise.all(
-      topMembers.map(async (memberAddr: any) => {
+      topMembers.map(async (memberAddr: unknown) => {
         const addr = String(memberAddr);
         const streak = await kv.hget<number>(`user:${addr}`, 'streak') ?? 0;
         const totalEarned = await kv.hget<number>(`user:${addr}`, 'totalEarned') ?? 0;

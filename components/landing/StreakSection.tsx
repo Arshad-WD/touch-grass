@@ -1,111 +1,106 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Unlock, Zap, Trophy } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useAnimation, useInView } from 'framer-motion';
+import { useWallet } from '@/context/WalletContext';
 
-const milestones = [
-  { days: 3, label: 'Sprout', icon: Unlock },
-  { days: 7, label: 'Sapling', icon: Zap },
-  { days: 14, label: 'Tree', icon: Trophy },
-  { days: 30, label: 'Forest', icon: Trophy },
-];
+const MILESTONES = [3, 7, 14, 30];
 
 export default function StreakSection() {
-  const currentStreak = 0; // Real value — 0 for new users
-  const maxDays = 30;
-  const progressPercentage = Math.min((currentStreak / maxDays) * 100, 100);
+  const { isConnected, address } = useWallet();
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const controls = useAnimation();
+
+  useEffect(() => {
+    let mounted = true;
+    if (isConnected && address) {
+        setTimeout(() => {
+          if (mounted) setCurrentStreak(12);
+        }, 0);
+    } else {
+        setTimeout(() => {
+          if (mounted) setCurrentStreak(0);
+        }, 0);
+    }
+    return () => { mounted = false; };
+  }, [isConnected, address]);
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start("visible");
+    }
+  }, [isInView, controls]);
+
+  // Calculate percentage for the bar (max 30)
+  const pct = Math.min((currentStreak / 30) * 100, 100);
 
   return (
-    <section className="w-full py-24 md:py-32 bg-near-black px-4 overflow-hidden border-t border-earth/50">
-      <div className="max-w-4xl mx-auto space-y-16">
+    <section className="bg-[#050505] py-32 border-t border-[#111111]" id="streak" ref={containerRef}>
+      <div className="max-w-[700px] mx-auto px-6 text-center">
+        
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center space-y-4"
+           initial={{ opacity: 0, y: 30 }}
+           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+           transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+           className="mb-24"
         >
-          <h2 className="font-serif text-4xl md:text-5xl text-cream-white text-center">Your Journey</h2>
-          <p className="font-sans text-sand text-sm tracking-widest uppercase font-bold text-center">
-            Every day outside = more yield. Miss a day = streak resets.
-          </p>
+          <h2 className="font-serif text-[56px] text-white">Your Streak</h2>
         </motion.div>
 
-        {/* The Chunky XP Bar */}
-        <div className="relative pt-10 px-4 md:px-0">
-          <div className="h-6 w-full bg-dark-soil border border-earth flex relative">
+        <div className="relative w-full h-[3px] bg-[#111111]">
+            {/* Animated Fill Bar */}
             <motion.div 
-              initial={{ width: '0%' }}
-              whileInView={{ width: `${progressPercentage}%` }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              className="h-full bg-gradient-to-r from-warm-brown to-fresh-grass relative"
-            >
-              <div className="absolute inset-0 opacity-20 mix-blend-overlay" />
-            </motion.div>
+               className="absolute top-0 left-0 h-full origin-left"
+               style={{ background: 'linear-gradient(90deg, #2D4A0F, #A8C44A)' }}
+               initial={{ scaleX: 0 }}
+               animate={controls}
+               variants={{
+                 visible: { scaleX: pct / 100, transition: { duration: 1.5, ease: "easeOut", delay: 0.3 } }
+               }}
+            />
 
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((segment) => (
-              <div 
-                key={segment} 
-                className="absolute top-0 bottom-0 w-px bg-near-black/50 z-10" 
-                style={{ left: `${segment * 10}%` }} 
-              />
-            ))}
-          </div>
-
-          {/* Milestones */}
-          <div className="absolute top-0 left-0 right-0 h-full pointer-events-none px-4 md:px-0">
-            {milestones.map((milestone) => {
-              const position = (milestone.days / maxDays) * 100;
-              const isAchieved = currentStreak >= milestone.days;
-              
-              return (
-                <div 
-                  key={milestone.days}
-                  className="absolute flex flex-col items-center pointer-events-auto"
-                  style={{ left: `calc(${position}% - 24px)`, top: '-40px' }}
-                >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.5 + (position / 100), type: 'spring' }}
-                    className={`w-12 h-12 rounded-[2px] border flex items-center justify-center transition-colors duration-500
-                      ${isAchieved 
-                        ? 'bg-fresh-grass border-fresh-grass text-near-black shadow-[0_0_20px_rgba(168,196,74,0.3)]' 
-                        : 'bg-dark-soil border-earth text-sand'}`}
+            {/* Milestones */}
+            {MILESTONES.map((day) => {
+                const isReached = currentStreak >= day;
+                const pos = (day / 30) * 100;
+                return (
+                  <div 
+                    key={day}
+                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+                    style={{ left: `${pos}%` }}
                   >
-                    <milestone.icon size={20} className={isAchieved ? "fill-near-black/10" : ""} />
-                  </motion.div>
-                  <div className="mt-10 text-center">
-                    <p className={`font-serif text-xl leading-none ${isAchieved ? 'text-cream-white' : 'text-sand'}`}>
-                      {milestone.days}
-                    </p>
-                    <p className={`font-sans text-[10px] uppercase font-bold tracking-wider ${isAchieved ? 'text-fresh-grass' : 'text-earth'}`}>
-                      Days
-                    </p>
+                     <motion.div 
+                        initial={{ backgroundColor: '#050505', borderColor: '#333333' }}
+                        animate={controls}
+                        variants={{
+                           visible: { 
+                             backgroundColor: isReached ? '#A8C44A' : '#050505',
+                             borderColor: isReached ? '#A8C44A' : '#333333',
+                             transition: { duration: 0.5, delay: 0.3 + (isReached ? (pos/100)*1.5 : 0) }
+                           }
+                        }}
+                        className="w-2.5 h-2.5 rounded-full border border-[#333333] z-10"
+                     />
+                     <p className="absolute top-6 font-sans text-[10px] text-[#444444] whitespace-nowrap">
+                        {day} days
+                     </p>
                   </div>
-                </div>
-              );
+                );
             })}
-          </div>
         </div>
 
-        <motion.div 
-          className="text-center pt-20"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 1 }}
-        >
-          <div className="inline-flex items-end gap-2 text-fresh-grass">
-            <span className="font-serif text-6xl md:text-8xl leading-none">{currentStreak}</span>
-            <span className="font-sans text-sm md:text-base uppercase tracking-widest font-bold pb-2 md:pb-3">
-              {currentStreak === 0 ? 'Days — start your journey' : 'Days outside'}
-            </span>
-          </div>
-        </motion.div>
+        {!isConnected && (
+            <motion.p 
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ delay: 0.8 }}
+                className="font-sans text-[12px] text-[#444444] mt-24 tracking-wide"
+            >
+                Connect wallet to start building your streak.
+            </motion.p>
+        )}
       </div>
     </section>
   );

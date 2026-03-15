@@ -1,26 +1,25 @@
 import type { Metadata } from "next";
-import { Playfair_Display, DM_Sans } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
-import GrainOverlay from "@/components/GrainOverlay";
 import PageTransition from "@/components/PageTransition";
 import Providers from "@/components/Providers";
+import Preloader from "@/components/Preloader";
 
-const playfair = Playfair_Display({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
+  variable: '--font-sans',
 });
 
-const dmSans = DM_Sans({
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
   subsets: ["latin"],
-  variable: "--font-dm-sans",
-  display: "swap",
+  variable: '--font-serif',
 });
 
 export const metadata: Metadata = {
-  title: "Touch Grass | Stake STRK, Go Outside, Earn Yield",
-  description: "A DeFi app that verifies your outdoor activity via Groq AI vision and GPS to unlock staking yield on Starknet.",
+  title: "Touch Grass",
+  description: "Prove you went outside to unlock DeFi yield.",
 };
 
 export default function RootLayout({
@@ -29,19 +28,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${playfair.variable} ${dmSans.variable} font-sans antialiased min-h-screen text-parchment bg-near-black selection:bg-fresh-grass selection:text-near-black overflow-x-hidden flex flex-col`}>
+    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable}`}>
+      <body className="antialiased bg-black text-white selection:bg-fresh-grass selection:text-black min-h-screen flex flex-col font-sans">
         <Providers>
-          <GrainOverlay />
+          <Preloader />
           <Navigation />
-          <main className="relative z-10 w-full min-h-screen flex flex-col">
+          <div className="flex-1 relative z-10 flex flex-col pt-20">
             <PageTransition>
-              {children}
+              <main className="flex-1">{children}</main>
             </PageTransition>
-          </main>
+          </div>
         </Providers>
       </body>
     </html>
   );
 }
-
