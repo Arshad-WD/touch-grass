@@ -13,12 +13,15 @@ export default function LandingPage() {
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
   const [navScrolled, setNavScrolled] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   
   // Refs
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const streakFillRef = useRef<HTMLDivElement>(null);
   const streakContainerRef = useRef<HTMLDivElement>(null);
+  const magneticButton1Ref = useRef<HTMLButtonElement>(null);
+  const magneticButton2Ref = useRef<HTMLButtonElement>(null);
 
   // Effects
   useEffect(() => {
@@ -64,6 +67,11 @@ export default function LandingPage() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    let mouseX = 0;
+    let mouseY = 0;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
     let w = window.innerWidth;
     let h = window.innerHeight;
     canvas.width = w;
@@ -79,6 +87,7 @@ export default function LandingPage() {
         speed: 0,
         twinkleSpeed: 0.005 + Math.random() * 0.015,
         twinkleOffset: Math.random() * Math.PI * 2,
+        parallaxFactor: 0.01 + Math.random() * 0.03,
       });
     }
 
@@ -97,7 +106,16 @@ export default function LandingPage() {
       ctx.clearRect(0, 0, w, h);
       
       stars.forEach(star => {
+        // Scroll Parallax
         star.y -= scrollDelta * 0.1;
+
+        // Mouse reaction lerp
+        lastMouseX += (mouseX - lastMouseX) * 0.05;
+        lastMouseY += (mouseY - lastMouseY) * 0.05;
+
+        const dx = (w / 2 - lastMouseX) * star.parallaxFactor;
+        const dy = (h / 2 - lastMouseY) * star.parallaxFactor;
+
         if (star.y > h) star.y = 0;
         if (star.y < 0) star.y = h;
 
@@ -105,7 +123,7 @@ export default function LandingPage() {
         const alpha = star.opacity * (0.6 + 0.4 * twinkle);
         
         ctx.beginPath();
-        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.arc(star.x + dx, star.y + dy, star.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
         ctx.fill();
       });
@@ -122,8 +140,33 @@ export default function LandingPage() {
     };
     window.addEventListener('resize', handleResize);
 
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      // Magnetic Buttons
+      [magneticButton1Ref, magneticButton2Ref].forEach(ref => {
+        if (!ref.current) return;
+        const rect = ref.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+        
+        if (dist < 100) {
+          const moveX = (e.clientX - centerX) * 0.35;
+          const moveY = (e.clientY - centerY) * 0.35;
+          ref.current.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        } else {
+          ref.current.style.transform = `translate(0, 0)`;
+        }
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
       clearInterval(lbInterval);
       observer.disconnect();
       cancelAnimationFrame(animationFrameId);
@@ -239,27 +282,42 @@ export default function LandingPage() {
         alignItems: 'center', justifyContent: 'center', overflow: 'hidden', zIndex: 1
       }}>
         <div style={{
-          position: 'absolute', width: '600px', height: '600px', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, rgba(168,196,74,0.07) 0%, transparent 70%)',
+          position: 'fixed', width: '800px', height: '800px', 
+          top: mousePos.y, left: mousePos.x, transform: 'translate(-50%, -50%)',
+          background: 'radial-gradient(circle, rgba(168,196,74,0.08) 0%, transparent 70%)',
+          pointerEvents: 'none', zIndex: 0, transition: 'top 0.15s ease-out, left 0.15s ease-out'
+        }} />
+
+        <div style={{
+          position: 'absolute', width: '100%', height: '100%', top: 0, left: 0,
+          background: 'radial-gradient(circle at 50% 50%, rgba(168,196,74,0.03) 0%, transparent 50%)',
           pointerEvents: 'none', zIndex: 1
         }} />
 
         {/* Grass SVG */}
-        <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 2, pointerEvents: 'none' }}>
-          <svg width="300" height="220" viewBox="0 0 300 220">
+        <div style={{ position: 'absolute', bottom: -20, left: '50%', transform: 'translateX(-50%)', zIndex: 2, pointerEvents: 'none' }}>
+          <svg width="400" height="260" viewBox="0 0 300 220">
             <defs>
               <linearGradient id="grassGrad" x1="0" y1="1" x2="0" y2="0">
-                <stop offset="0%" stopColor="#2D4A0F" />
+                <stop offset="0%" stopColor="#1A2E05" />
                 <stop offset="100%" stopColor="#A8C44A" />
               </linearGradient>
             </defs>
-            <path d="M150,220 C130,180 100,140 80,60" stroke="url(#grassGrad)" strokeWidth="2" fill="none" strokeLinecap="round" style={{ transformOrigin: 'bottom center', animation: 'sway-1 4s ease-in-out infinite' }} />
-            <path d="M150,220 C135,175 115,130 100,50" stroke="url(#grassGrad)" strokeWidth="2" fill="none" strokeLinecap="round" style={{ transformOrigin: 'bottom center', animation: 'sway-2 5s ease-in-out infinite' }} />
-            <path d="M150,220 C140,170 125,120 120,40" stroke="url(#grassGrad)" strokeWidth="2" fill="none" strokeLinecap="round" style={{ transformOrigin: 'bottom center', animation: 'sway-3 3.5s ease-in-out infinite' }} />
-            <path d="M150,220 C150,165 150,110 150,30" stroke="url(#grassGrad)" strokeWidth="2" fill="none" strokeLinecap="round" style={{ transformOrigin: 'bottom center', animation: 'sway-4 6s ease-in-out infinite' }} />
-            <path d="M150,220 C160,170 175,120 180,40" stroke="url(#grassGrad)" strokeWidth="2" fill="none" strokeLinecap="round" style={{ transformOrigin: 'bottom center', animation: 'sway-5 4.5s ease-in-out infinite' }} />
-            <path d="M150,220 C165,175 185,130 200,50" stroke="url(#grassGrad)" strokeWidth="2" fill="none" strokeLinecap="round" style={{ transformOrigin: 'bottom center', animation: 'sway-6 5.5s ease-in-out infinite' }} />
-            <path d="M150,220 C170,180 200,140 220,60" stroke="url(#grassGrad)" strokeWidth="2" fill="none" strokeLinecap="round" style={{ transformOrigin: 'bottom center', animation: 'sway-7 3s ease-in-out infinite' }} />
+            {/* Denser Grass */}
+            {[...Array(12)].map((_, i) => {
+              const x = 150 + (i - 6) * 15;
+              const h = 40 + Math.random() * 40;
+              const swayIdx = (i % 7) + 1;
+              const speed = 3 + Math.random() * 4;
+              return (
+                <path 
+                  key={i}
+                  d={`M${150},220 C${150 + (i-6)*10},${220-h/2} ${x},${220-h} ${x},${h}`} 
+                  stroke="url(#grassGrad)" strokeWidth="1.5" fill="none" strokeLinecap="round" 
+                  style={{ transformOrigin: 'bottom center', animation: `sway-${swayIdx} ${speed}s ease-in-out infinite` }} 
+                />
+              );
+            })}
           </svg>
         </div>
 
@@ -275,7 +333,7 @@ export default function LandingPage() {
           <h1 className="hero-headline" style={{
             fontFamily: 'var(--serif)', fontSize: 'clamp(72px, 11vw, 150px)', fontWeight: 400, lineHeight: 0.92, color: 'white', letterSpacing: '-0.02em', marginBottom: '32px'
           }}>
-            <span style={{ display:'block', animation:'slideUp 0.8s ease 0.4s both' }}>Touch</span>
+            <span style={{ display:'block', fontStyle: 'italic', animation:'slideUp 0.8s ease 0.4s both' }}>Touch</span>
             <span style={{ display:'block', animation:'slideUp 0.8s ease 0.65s both' }}>Grass.</span>
           </h1>
 
@@ -285,19 +343,21 @@ export default function LandingPage() {
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', animation: 'slideUp 0.8s ease 1.1s both', flexWrap: 'wrap' }}>
             <button 
+              ref={magneticButton1Ref}
               onClick={() => router.push('/stake')}
               style={{
                 background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255,255,255,0.18)', color: 'white', padding: '14px 40px', fontSize: '11px', letterSpacing: '0.18em', borderRadius: '2px', transition: 'all 0.25s ease'
+                border: '1px solid rgba(255,255,255,0.18)', color: 'white', padding: '14px 40px', fontSize: '11px', letterSpacing: '0.18em', borderRadius: '2px', transition: 'all 0.25s ease, transform 0.2s ease-out'
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'; e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
             >STAKE NOW</button>
 
             <button 
+              ref={magneticButton2Ref}
               onClick={() => { const el = document.getElementById('how-it-works'); el?.scrollIntoView({ behavior: 'smooth' }); }}
               style={{
-                background: 'var(--green)', border: 'none', color: '#000', padding: '14px 40px', fontSize: '11px', fontWeight: 500, letterSpacing: '0.18em', borderRadius: '2px', transition: 'all 0.25s ease'
+                background: 'var(--green)', border: 'none', color: '#000', padding: '14px 40px', fontSize: '11px', fontWeight: 500, letterSpacing: '0.18em', borderRadius: '2px', transition: 'all 0.25s ease, transform 0.2s ease-out'
               }}
               onMouseEnter={e => { e.currentTarget.style.background = '#BDD65A'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--green)'; }}
@@ -331,8 +391,11 @@ export default function LandingPage() {
             { num: '02', title: 'Go Outside', desc: 'Leave your screen. Find real grass. Upload a photo with your GPS location to prove it.', icon: <><circle cx="12" cy="12" r="4"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 2v2m0 16v2m7.07-14.07l-1.41 1.41M6.34 17.66l-1.41 1.41M22 12h-2M4 12H2m15.66 5.66l-1.41-1.41M6.34 6.34l-1.41-1.41"/></> },
             { num: '03', title: 'Unlock Yield', desc: 'Groq AI verifies you were actually outdoors. Pass the check — yield is yours. Fail — try again tomorrow.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /> }
           ].map((card, i) => (
-            <div key={i} className="reveal" style={{ transitionDelay: `${i * 0.15}s`, background: '#000', padding: '48px 36px', position: 'relative', overflow: 'hidden', transition: 'background 0.3s' }}
-                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(168,196,74,0.03)'} onMouseLeave={e => e.currentTarget.style.background = '#000'}>
+            <div key={i} className="reveal" style={{ 
+              transitionDelay: `${i * 0.15}s`, background: '#000', padding: '48px 36px', position: 'relative', overflow: 'hidden', transition: 'background 0.3s',
+              border: '1px solid #111', boxShadow: '0 0 0 1px rgba(255,255,255,0.02) inset' 
+            }}
+                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'} onMouseLeave={e => e.currentTarget.style.background = '#000'}>
               <span style={{ fontFamily: 'var(--serif)', fontSize: '120px', color: 'rgba(255,255,255,0.03)', lineHeight: 1, userSelect: 'none', pointerEvents: 'none', position: 'absolute', right: '24px', bottom: '16px' }}>
                 {card.num}
               </span>
